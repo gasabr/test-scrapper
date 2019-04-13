@@ -8,3 +8,9 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile-scrapper
+    volumes:
+      - ./scrapper:/scrapper/
+    ports:
+      - 8000:8000
+    working_dir: /scrapper
+    command: python manage.py runserver 0.0.0.0:8000
