@@ -15,11 +15,12 @@ logging.basicConfig(level=logging.DEBUG)
 def search(request):
     try:
         logger.info("Trying to delay staff")
-        inspected = add.delay(4, 4)
-        logger.debug("Inspected looks like {}".format(inspected))
+        result = add.delay(4, 4).get()
+        logger.debug("Inspected looks like {}".format(result))
     except Exception as e:
         logger.exception(e)
-    return HttpResponse(f"search page {inspected}")
+
+    return HttpResponse(f"search page {result}")
 
 
 def list(request):
