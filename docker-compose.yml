@@ -14,3 +14,4 @@ services:
       - 8000:8000
     working_dir: /scrapper
     command: python manage.py runserver 0.0.0.0:8000
+    user: 1000:1000
