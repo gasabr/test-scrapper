@@ -1,0 +1,10 @@
+version: "3"
+services:
+  db:
+    build:
+      context: ./
+      dockerfile: Dockerfile-db
+  scrapper:
+    build:
+      context: ./
+      dockerfile: Dockerfile-scrapper
