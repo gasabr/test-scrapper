@@ -75,8 +75,12 @@ WSGI_APPLICATION = 'scrapper.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'scrapping',
+        'USER': 'django',
+        'PASSWORD': 'password',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 
@@ -137,3 +141,13 @@ LOGGING = {
         },
     },
 }
+
+# For RabbitMQ
+# TODO: i'm aware that storing creds in code is very bad idea, sorry
+CELERY_BROKER_URL = 'amqp://rabbitmq:rabbitmq@queue'
+CELERY_RESULT_BACKEND = 'amqp://rabbitmq:rabbitmq@queue:'
+# Celery Data Format
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Kolkata'

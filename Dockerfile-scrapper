@@ -1,2 +1,3 @@
 FROM python:3.7
 RUN pip install Django==2.0 grab==0.6.41 Celery==4.3.0 psycopg2==2.8.1
+RUN pip install pika # to check connection to rabbitmq

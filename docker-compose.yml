@@ -1,9 +1,17 @@
-version: "3"
+version: "3.5"
 services:
   db:
     build:
       context: ./
       dockerfile: Dockerfile-db
+    networks:
+      - app_net
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: django
+      POSTGRES_DB: scrapping
+
+
   scrapper:
     build:
       context: ./
@@ -13,5 +21,40 @@ services:
     ports:
       - 8000:8000
     working_dir: /scrapper
-    command: python manage.py runserver 0.0.0.0:8000
+    command: bash -c "sleep 10; celery -A scrapper worker -l debug -E & python manage.py migrate & python manage.py runserver -v 3 --traceback 0.0.0.0:8000"
+    tty: true
     user: 1000:1000
+    networks:
+      - app_net
+    depends_on:
+      - db
+      - queue
+#      - worker
+
+  worker:
+    build:
+      context: ./
+      dockerfile: Dockerfile-scrapper
+    working_dir: /scrapper
+    volumes:
+      - ./scrapper:/scrapper/
+    command: celery -A scrapper worker -l info
+    depends_on:
+      - db
+      - queue
+    networks:
+      - app_net
+
+  queue:
+    image: rabbitmq
+    hostname: rabbit
+    environment:
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASS: "rabbitmq"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    driver: bridge
