@@ -1,3 +1,4 @@
+import time
 import lxml
 from grab import Grab
 
@@ -7,6 +8,7 @@ from celery import shared_task
 @shared_task
 def parse_specialization(url):
     ''' Yeah, I know, code is awful, I just don't remember how to use xpath.'''
+    time.sleep(2)  # to be able to see status
     g = Grab()
     response = g.go(url).unicode_body()
     html = lxml.html.fromstring(response)

@@ -2,6 +2,7 @@ import logging
 
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
+from celery import Celery
 
 from .tasks import get_specialization_links, parse_specialization
 from .models import Vacancy
@@ -61,9 +62,10 @@ def show(request):
 
 def status(request):
     app = Celery('scrapper')
-    dir_ = ','.join(dir(app.control))
-    queues = app.control.inspect().report()
-    return HttpResponse(queues)
+    app.config_from_object('django.conf:settings', namespace='CELERY')
+    i = app.control.inspect()
+    n_active_workers = sum([len(x) for x in list(i.active().values())])
+    return HttpResponse(f'# active workers = {n_active_workers}\n')
 
 
 def links(request):
