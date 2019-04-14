@@ -24,11 +24,11 @@ def parse_specialization(url):
         link = info_divs[0].find('a')
         if link is not None:
             vacancy['link'] = link.get('href')
-            vacancy['title'] = link.text
+            vacancy['name'] = link.text
 
         texts = [div.text for div in info_divs]
         if texts[0] is not None:
-            vacancy['text'] = texts[0]
+            vacancy['short_description'] = texts[0]
         comp_div = row.find('div[@class="vacancy-serp-item__sidebar"]/div')
         compensation = comp_div.text if comp_div is not None else None
         if compensation is not None:
@@ -39,12 +39,13 @@ def parse_specialization(url):
             vacancy['salary_to'] = to
 
         if all(map(lambda x: vacancy.get(x) is not None,
-                   ['link', 'title', 'text'])):
+                   ['link', 'name', 'short_description'])):
             # we collected all the data for one
             if 'salary_from' not in vacancy:
                 vacancy['salary_from'] = None
                 vacancy['salary_to'] = None
 
+            vacancy['currency'] = 'RUB'
             vacancies.append(vacancy)
             vacancy = {}
 
