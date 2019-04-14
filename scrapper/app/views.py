@@ -16,7 +16,6 @@ logging.basicConfig(level=logging.DEBUG)
 # Create your views here.
 def search(request):
     url = 'https://spb.hh.ru/employer/889'
-    result = None
     try:
         logger.info("Trying to delay staff")
         links = get_specialization_links.delay(url).get()
@@ -42,7 +41,7 @@ def search(request):
     except Exception as e:
         logger.exception(e)
 
-    return HttpResponse(result)
+    return HttpResponse()
 
 
 def show(request):
@@ -61,4 +60,23 @@ def show(request):
 
 
 def status(request):
-    return HttpResponse("status page")
+    app = Celery('scrapper')
+    dir_ = ','.join(dir(app.control))
+    queues = app.control.inspect().report()
+    return HttpResponse(queues)
+
+
+def links(request):
+    try:
+        all_vacancies = Vacancy.objects.values_list('name', 'link')
+    except ObjectDoesNotExist as e:
+        logger.exception(e)
+        all_vacancies = []
+
+    logger.debug(all_vacancies)
+    result = '\n'.join([v[0] + ', ' + str(v[1])
+                        for v in all_vacancies])
+    result += '\n'
+
+    return HttpResponse(result)
+

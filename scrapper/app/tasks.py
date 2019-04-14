@@ -1,13 +1,7 @@
 import lxml
 from grab import Grab
 
-from celery.utils.log import get_task_logger
 from celery import shared_task
-
-
-@shared_task
-def add(x, y):
-    return x + y
 
 
 @shared_task
